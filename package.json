@@ -1,0 +1,39 @@
+{
+  "name": "quota",
+  "version": "0.1.0",
+  "description": "Terminal-first AI usage & limit tracker. See remaining quota for Codex, Claude Code, Cursor, and more — before it stops you.",
+  "keywords": [
+    "ai",
+    "quota",
+    "rate-limit",
+    "usage",
+    "codex",
+    "claude",
+    "cursor",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "pawfromoz",
+  "type": "module",
+  "bin": {
+    "quota": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
