@@ -26,7 +26,7 @@ AI coding assistants (Codex, Claude Code, Cursor) impose rate limits and weekly 
 ## Install
 
 ```bash
-npm install -g quota
+npm install -g @ozperium/quota
 ```
 
 ## Usage
