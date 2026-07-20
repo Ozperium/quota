@@ -1,5 +1,5 @@
 {
-  "name": "quota",
+  "name": "@ozperium/quota",
   "version": "0.1.0",
   "description": "Terminal-first AI usage & limit tracker. See remaining quota for Codex, Claude Code, Cursor, and more — before it stops you.",
   "keywords": [
@@ -15,6 +15,9 @@
   "license": "MIT",
   "author": "pawfromoz",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "quota": "./dist/cli.js"
   },
