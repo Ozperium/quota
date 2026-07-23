@@ -1,6 +1,6 @@
 {
   "name": "@ozperium/quota",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Terminal-first AI usage & limit tracker. See remaining quota for Codex, Claude Code, Cursor, and more — before it stops you.",
   "keywords": [
     "ai",
