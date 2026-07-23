@@ -6,11 +6,16 @@
     "ai",
     "quota",
     "rate-limit",
+    "rate-limits",
+    "limits",
     "usage",
     "codex",
     "claude",
+    "claude-code",
     "cursor",
-    "cli"
+    "cli",
+    "terminal",
+    "monitor"
   ],
   "license": "MIT",
   "author": "pawfromoz",
