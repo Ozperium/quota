@@ -67,9 +67,15 @@ quota --help       Help
 - [ ] Webhook / notification on reset
 - [ ] Cross-provider aggregate dashboard
 
-## Why a second product from the same author
+## Part of the AI Dev Workflow Stack
 
-`quota` is a standalone product. It shares no code with [AgentSpec](https://github.com/Ozperium/agentspec) (AI agent testing). Different problem, different customers, different value proposition.
+`quota` is one tool in a three-part observability stack for AI development:
+
+| Tool | What it does | Install |
+|------|-------------|---------|
+| **[AgentSpec](https://github.com/Ozperium/agentspec)** | Test AI agent behavior — catch regressions before production | `npm i -g @ozperium/agentspec` |
+| **[AICostTracker](https://github.com/Ozperium/aicost-tracker)** | Track token usage and costs across projects | `npm i -g @ozperium/aicost-tracker` |
+| **quota** | Monitor AI rate limits — know what's left before it stops you | `npm i -g @ozperium/quota` |
 
 ## License
 
