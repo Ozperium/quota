@@ -56,12 +56,51 @@ quota --help       Help
 - Tokens are stored on-device only.
 - Not affiliated with any provider.
 
+## Shell prompt integration
+
+Show remaining AI quota in your shell prompt using `quota --json`.
+
+### Starship
+
+Add to `~/.config/starship.toml`:
+
+```toml
+[custom.quota]
+command = """quota --json 2>/dev/null | node -e "
+const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+const active=d.filter(p=>p.remainingFraction!=null);
+if(!active.length) process.exit(1);
+console.log(active.map(p=>p.provider.split(' ')[0]+': '+Math.floor(p.remainingFraction*100)+'%').join(' · '));
+" 2>/dev/null"""
+when = "quota --json 2>/dev/null | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); process.exit(d.some(p=>p.remainingFraction!=null)?0:1)\" 2>/dev/null"
+format = "[$output]($style) "
+style = "yellow"
+shell = ["bash", "--noprofile", "--norc"]
+```
+
+This adds a segment like `Claude: 64% · Codex: 42%` when providers are connected. Hide it when nothing is connected.
+
+### oh-my-posh
+
+Add a `command` segment to your theme JSON:
+
+```json
+{
+  "type": "command",
+  "style": "plain",
+  "foreground": "yellow",
+  "properties": {
+    "command": "quota --json 2>/dev/null | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); const a=d.filter(p=>p.remainingFraction!=null); if(a.length) console.log(a.map(p=>p.provider.split(' ')[0]+': '+Math.floor(p.remainingFraction*100)+'%').join(' · '))\" 2>/dev/null"
+  }
+}
+```
+
 ## Roadmap
 
 - [x] Local-read providers (Claude Code, Codex)
 - [x] Terminal, JSON, watch modes
+- [x] Shell prompt integration (starship / oh-my-posh)
 - [ ] OAuth login for Cursor, Grok
-- [ ] Shell prompt integration (starship / oh-my-posh segment)
 - [ ] macOS menubar app
 - [ ] CI check (fail build when out of quota)
 - [ ] Webhook / notification on reset
