@@ -78,6 +78,34 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (sub === 'check') {
+    const minIdx = args.indexOf('--min-remaining');
+    const minPct = minIdx >= 0 ? Number.parseFloat(args[minIdx + 1] ?? '0') : 0;
+    const minFraction = minPct / 100;
+    const statuses = await fetchAll(providers);
+    const connected = statuses.filter((s) => s.remainingFraction !== null);
+
+    if (connected.length === 0) {
+      if (!json) console.error('quota check: no providers connected');
+      else process.stdout.write(renderJson(statuses) + '\n');
+      process.exit(2);
+    }
+
+    const failing = connected.filter((s) => (s.remainingFraction ?? 1) < minFraction);
+
+    if (json) {
+      process.stdout.write(renderJson(statuses) + '\n');
+    } else {
+      for (const s of connected) {
+        const pct = Math.floor((s.remainingFraction ?? 0) * 100);
+        const ok = !failing.includes(s);
+        console.log(`  ${ok ? '✓' : '✗'} ${s.provider}: ${pct}% remaining${!ok ? ` (below ${minPct}% threshold)` : ''}`);
+      }
+    }
+
+    process.exit(failing.length > 0 ? 1 : 0);
+  }
+
   await printOnce(providers, json);
 }
 
@@ -94,11 +122,12 @@ function printHelp(): void {
 quota — terminal-first AI usage & limit tracker
 
 USAGE
-  quota              Show usage for all connected providers
-  quota watch [sec]  Live-monitor (re-checks every N seconds, default 60)
-  quota login        Show provider connection status
-  quota --json       Machine-readable JSON output
-  quota --help       This help
+  quota                              Show usage for all connected providers
+  quota watch [sec]                  Live-monitor (re-checks every N seconds, default 60)
+  quota check [--min-remaining <n>]  Exit 1 if any provider is below n% remaining (default 0)
+  quota login                        Show provider connection status
+  quota --json                       Machine-readable JSON output
+  quota --help                       This help
 
 PROVIDERS (MVP)
   Claude Code        reads local usage state from ~/.claude

@@ -32,12 +32,31 @@ npm install -g @ozperium/quota
 ## Usage
 
 ```
-quota              Show usage for all connected providers
-quota watch [sec]  Live-monitor (re-checks every N seconds, default 60)
-quota login        Show provider connection status
-quota --json       Machine-readable JSON output (for scripts, prompts, CI)
-quota --help       Help
+quota                              Show usage for all connected providers
+quota watch [sec]                  Live-monitor (re-checks every N seconds, default 60)
+quota check [--min-remaining <n>]  Exit 1 if any provider is below n% (for CI)
+quota login                        Show provider connection status
+quota --json                       Machine-readable JSON output
+quota --help                       Help
 ```
+
+### CI integration
+
+Fail a build if you're running low before a long test run:
+
+```yaml
+# .github/workflows/test.yml
+- name: Check AI quota
+  run: quota check --min-remaining 20
+```
+
+Or in any shell script:
+
+```bash
+quota check --min-remaining 10 || echo "Warning: AI quota low, skipping AI tests"
+```
+
+Exit codes: `0` = all providers above threshold, `1` = at least one below, `2` = no providers connected.
 
 ## Providers (MVP)
 
@@ -100,9 +119,9 @@ Add a `command` segment to your theme JSON:
 - [x] Local-read providers (Claude Code, Codex)
 - [x] Terminal, JSON, watch modes
 - [x] Shell prompt integration (starship / oh-my-posh)
+- [x] CI check — `quota check --min-remaining <n>` exits 1 when low
 - [ ] OAuth login for Cursor, Grok
 - [ ] macOS menubar app
-- [ ] CI check (fail build when out of quota)
 - [ ] Webhook / notification on reset
 - [ ] Cross-provider aggregate dashboard
 
