@@ -2,6 +2,10 @@
 
 **Terminal-first AI usage & limit tracker.** Know what's left — before it stops you.
 
+[![npm version](https://img.shields.io/npm/v/@ozperium/quota)](https://www.npmjs.com/package/@ozperium/quota)
+[![npm downloads](https://img.shields.io/npm/dw/@ozperium/quota)](https://www.npmjs.com/package/@ozperium/quota)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 `quota` shows your remaining usage for AI coding tools (Codex, Claude Code, Cursor, Grok) right in your terminal. Stop watching the clock when your AI coding session hits a rate limit.
 
 ```
