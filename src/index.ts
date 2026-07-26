@@ -8,3 +8,5 @@ export { formatCountdown } from './types.js';
 export { renderReport, renderJson } from './reporter.js';
 export { loadConfig, saveConfig, getProviderConfig, setProviderConfig, configPath } from './config.js';
 export type { QuotaConfig } from './config.js';
+export { createServer, decidePreRequest } from './webhook.js';
+export type { ModelProviderMapping, WebhookOptions, PreRequestBody, PreRequestResponse } from './webhook.js';

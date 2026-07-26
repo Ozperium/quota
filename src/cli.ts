@@ -12,6 +12,7 @@ import { CodexProvider } from './providers/codex.js';
 import { StubProvider } from './providers/stub.js';
 import type { Provider, UsageStatus } from './types.js';
 import { renderReport, renderJson } from './reporter.js';
+import { createServer, type ModelProviderMapping } from './webhook.js';
 
 function getProviders(): Provider[] {
   // For the MVP, show all known providers. Connected ones report real data;
@@ -106,6 +107,22 @@ async function main(): Promise<void> {
     process.exit(failing.length > 0 ? 1 : 0);
   }
 
+  if (sub === 'serve') {
+    const portIdx = args.indexOf('--port');
+    const port = portIdx >= 0 ? Number.parseInt(args[portIdx + 1] ?? '8790', 10) : 8790;
+    const strict = args.includes('--strict');
+    const mappings: ModelProviderMapping[] = [
+      { prefix: 'claude', provider: new ClaudeCodeProvider() },
+      { prefix: 'codex', provider: new CodexProvider() },
+    ];
+    const handle = await createServer(mappings, { port, strict });
+    console.log(`quota serve — listening on http://127.0.0.1:${handle.port}`);
+    console.log(`Point a Stoke pre_request plugin at it:\n`);
+    console.log(`  [plugins]\n  pre_request = ["http://127.0.0.1:${handle.port}/"]\n`);
+    if (strict) console.log('(strict mode: blocks requests instead of rerouting when quota is exhausted)\n');
+    return; // keep alive
+  }
+
   await printOnce(providers, json);
 }
 
@@ -126,6 +143,7 @@ USAGE
   quota watch [sec]                  Live-monitor (re-checks every N seconds, default 60)
   quota check [--min-remaining <n>]  Exit 1 if any provider is below n% remaining (default 0)
   quota login                        Show provider connection status
+  quota serve [--port <n>] [--strict]  Run as a Stoke (stokegate.com) pre_request plugin webhook
   quota --json                       Machine-readable JSON output
   quota --help                       This help
 
@@ -139,7 +157,7 @@ PRIVACY
   Quota reads provider state locally. No data leaves your machine except
   direct calls you initiate to provider APIs. Config lives in ~/.quota.
 
-  https://github.com/pawfromoz/quota
+  https://github.com/Ozperium/quota
 `);
 }
 

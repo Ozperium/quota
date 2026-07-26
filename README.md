@@ -40,6 +40,7 @@ quota                              Show usage for all connected providers
 quota watch [sec]                  Live-monitor (re-checks every N seconds, default 60)
 quota check [--min-remaining <n>]  Exit 1 if any provider is below n% (for CI)
 quota login                        Show provider connection status
+quota serve [--port <n>] [--strict]  Run as a Stoke pre_request plugin webhook (see below)
 quota --json                       Machine-readable JSON output
 quota --help                       Help
 ```
@@ -61,6 +62,24 @@ quota check --min-remaining 10 || echo "Warning: AI quota low, skipping AI tests
 ```
 
 Exit codes: `0` = all providers above threshold, `1` = at least one below, `2` = no providers connected.
+
+## Use as a Stoke plugin
+
+[Stoke](https://stokegate.com) enforces *dollar*-world budget caps on metered API traffic, but its own docs say what it can't do: dollar-cap a subscription seat (Claude Max/Pro, Codex, Cursor), because there's no per-request price to meter there. That's quota-world — what `quota` already tracks.
+
+`quota serve` runs `quota` as an HTTP server that answers Stoke's `pre_request` plugin webhook. Before Stoke dispatches a request, it POSTs the candidate `model`/`routing` here; when the matched provider's subscription quota is running low, `quota` hands back a routing override so Stoke reroutes onto a different (dollar-metered or local) route instead of the caller hitting a mid-task 429 from the provider itself. It never blocks by default — pass `--strict` if you want it to refuse instead of reroute.
+
+```bash
+quota serve --port 8790
+```
+
+```toml
+# stoke.toml
+[plugins]
+pre_request = ["http://127.0.0.1:8790/"]
+```
+
+Model names are matched by substring against a small built-in table (`claude` → Claude Code, `codex` → Codex); providers with `state: 'unknown'` or `'ok'` are left untouched.
 
 ## Providers (MVP)
 
@@ -124,6 +143,7 @@ Add a `command` segment to your theme JSON:
 - [x] Terminal, JSON, watch modes
 - [x] Shell prompt integration (starship / oh-my-posh)
 - [x] CI check — `quota check --min-remaining <n>` exits 1 when low
+- [x] Stoke plugin — `quota serve` answers Stoke's `pre_request` webhook
 - [ ] OAuth login for Cursor, Grok
 - [ ] macOS menubar app
 - [ ] Webhook / notification on reset
